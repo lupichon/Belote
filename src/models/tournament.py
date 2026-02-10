@@ -38,6 +38,10 @@ class Tournament:
     def clear_teams(self): 
         """Supprime toutes les équipes du tournoi"""
         self._teams.clear()
+
+    def clear_games(self):
+        """Supprime tous les matchs du tournoi"""
+        self._games.clear()
     
     def add_game(self, game: Game):
         """Ajoute un match au tournoi"""

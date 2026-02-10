@@ -11,6 +11,7 @@ class Team:
     _name: str
     _player1 : Player
     _player2 : Player
+    _score: int = 0
 
     @property
     def name(self) -> str:
@@ -26,3 +27,7 @@ class Team:
     def player2(self) -> Player:
         """Retourne le second joueur de l'équipe"""
         return self._player2
+    
+    def add_score(self, score: int): 
+        """Ajoute des points au score de l'équipe"""
+        self._score += score

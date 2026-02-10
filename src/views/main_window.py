@@ -7,6 +7,7 @@ from PySide6.QtCore import Qt
 
 from views.tournament_views.teams_creation_view import TeamsCreationView
 from views.tournament_views.matches_view import MatchesView
+from views.tournament_views.standings_view import StandingsView
 
 from controllers.tournament_controller import TournamentController
 
@@ -17,6 +18,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         self.setWindowTitle("Application Bélote")
         self.tournament_controller = TournamentController()
+        self.matches_view = None
 
         # =====================
         # Widget central
@@ -124,19 +126,33 @@ class MainWindow(QMainWindow):
     # Slots (à compléter)
     # =====================
     def on_init_tournament(self):
+        self.matches_view = None
+        self.tournament_controller.clear_tournament()
         team_creation_view = TeamsCreationView(self)
-        team_creation_view.start_btn.clicked.connect(self.on_start_tournament)
+        team_creation_view.start_btn.clicked.connect(self.go_to_matches_view)
         self.stacked_widget.addWidget(team_creation_view)
         self.stacked_widget.setCurrentWidget(team_creation_view)
         self.hide_selection_buttons()
 
-    def on_start_tournament(self):
-        matches_view = MatchesView(self)
-        self.stacked_widget.addWidget(matches_view)
-        self.stacked_widget.setCurrentWidget(matches_view)
+    def go_to_matches_view(self):
+        if self.matches_view is None: 
+            self.matches_view = MatchesView(self)
+            self.matches_view.tournament_standings_requested.connect(self.go_to_standings_view)
+            self.stacked_widget.addWidget(self.matches_view)
+
+        self.stacked_widget.setCurrentWidget(self.matches_view)
         self.hide_selection_buttons()
 
-    # =====================
+    def go_to_standings_view(self, is_tournament_ended):
+        standings_view = StandingsView(self, is_tournament_ended)
+        standings_view.back_button.clicked.connect(self.go_to_matches_view)
+        if is_tournament_ended:
+            standings_view.restart_btn.clicked.connect(self.on_init_tournament)
+
+        self.stacked_widget.addWidget(standings_view)
+        self.stacked_widget.setCurrentWidget(standings_view)
+        self.hide_selection_buttons()
+
     # Méthodes
     # =====================
     def hide_selection_buttons(self):
